@@ -23,7 +23,7 @@ export const TimerItem: React.FC<TimerItemProps> = ({ timer }) => {
   useEffect(() => {
     if (timer.isRunning) {
       intervalRef.current = window.setInterval(() => {
-        updateTimer(timer.id);
+        updateTimer();
         
         if (timer.remainingTime <= 1 && !hasEndedRef.current) {
           hasEndedRef.current = true;
@@ -38,6 +38,8 @@ export const TimerItem: React.FC<TimerItemProps> = ({ timer }) => {
           });
         }
       }, 1000);
+    } else {
+      clearInterval(intervalRef.current!);
     }
 
     return () => clearInterval(intervalRef.current!);
@@ -54,10 +56,9 @@ export const TimerItem: React.FC<TimerItemProps> = ({ timer }) => {
   };
 
   const handleToggle = () => {
-    if (timer.remainingTime <= 0) {
-      hasEndedRef.current = false;
+    if (timer.remainingTime > 0) {
+      toggleTimer(timer.id);
     }
-    toggleTimer(timer.id);
   };
 
   return (

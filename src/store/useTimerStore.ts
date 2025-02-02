@@ -26,12 +26,15 @@ const timerSlice = createSlice({
         timer.isRunning = !timer.isRunning;
       }
     },
-    updateTimer: (state, action) => {
-      const timer = state.timers.find(timer => timer.id === action.payload);
-      if (timer && timer.isRunning) {
-        timer.remainingTime -= 1;
-        timer.isRunning = timer.remainingTime > 0;
-      }
+    updateTimer: (state) => {
+      state.timers.forEach((timer) => {
+        if (timer.isRunning && timer.remainingTime > 0) {
+          timer.remainingTime -= 1;
+          if (timer.remainingTime <= 0) {
+            timer.isRunning = false;
+          }
+        }
+      });
     },
     restartTimer: (state, action) => {
       const timer = state.timers.find(timer => timer.id === action.payload);
@@ -44,7 +47,9 @@ const timerSlice = createSlice({
       const timer = state.timers.find(timer => timer.id === action.payload.id);
       if (timer) {
         Object.assign(timer, action.payload.updates);
-        timer.remainingTime = action.payload.updates.duration || timer.duration;
+        if (action.payload.updates.duration) {
+          timer.remainingTime = action.payload.updates.duration;
+        }
         timer.isRunning = false;
       }
     },
@@ -52,7 +57,7 @@ const timerSlice = createSlice({
 });
 
 const store = configureStore({
-  reducer: timerSlice.reducer,
+  reducer: { timer: timerSlice.reducer },
 });
 
 export { store };
@@ -68,14 +73,14 @@ export const {
 
 export const useTimerStore = () => {
   const dispatch = useDispatch();
-  const timers = useSelector((state: { timers: Timer[] }) => state.timers);
+  const timers = useSelector((state: { timer: { timers: Timer[] } }) => state.timer.timers);
 
   return {
     timers,
     addTimer: (timer: Omit<Timer, 'id' | 'createdAt'>) => dispatch(addTimer(timer)),
     deleteTimer: (id: string) => dispatch(deleteTimer(id)),
     toggleTimer: (id: string) => dispatch(toggleTimer(id)),
-    updateTimer: (id: string) => dispatch(updateTimer(id)),
+    updateTimer: () => dispatch(updateTimer()),
     restartTimer: (id: string) => dispatch(restartTimer(id)),
     editTimer: (id: string, updates: Partial<Timer>) => dispatch(editTimer({ id, updates })),
   };

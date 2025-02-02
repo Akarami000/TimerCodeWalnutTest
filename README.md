@@ -47,7 +47,7 @@ Your task is to improve and enhance an existing Timer App based on the following
       - Extract the buttons in the **Add/Edit Timer Modal** as a **separate reusable component**.
       - Replace all instances of similar buttons in the app with this component.
 
-   6. **Consolidate Modal Code:**
+   6. **Consolidate Modal Code:**   
       - Refactor the code to use a **single modal component** for both adding and editing timers, eliminating duplication.
 
    7. **Validation Snack Bars:**
